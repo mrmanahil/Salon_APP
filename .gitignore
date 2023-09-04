@@ -1,0 +1,27 @@
+backend/.env
+backend/node_modules
+
+# Logs
+admin_web_app/logs
+admin_web_app/*.log
+admin_web_app/npm-debug.log*
+admin_web_app/yarn-debug.log*
+admin_web_app/yarn-error.log*
+admin_web_app/pnpm-debug.log*
+admin_web_app/lerna-debug.log*
+
+admin_web_app/node_modules
+admin_web_app/dist
+admin_web_app/dist-ssr
+admin_web_app/*.local
+
+# Editor directories and files
+admin_web_app/.vscode/*
+admin_web_app/!.vscode/extensions.json
+admin_web_app/.idea
+admin_web_app/.DS_Store
+admin_web_app/*.suo
+admin_web_app/*.ntvs*
+admin_web_app/*.njsproj
+admin_web_app/*.sln
+admin_web_app/*.sw?

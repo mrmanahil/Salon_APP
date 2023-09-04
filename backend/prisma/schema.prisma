@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:maazi@localhost:5432/salon_app"
+}
+
+model User {
+  userID     Int       @id @default(autoincrement()) @map("user_id")
+  email      String    @unique @map("user_email")
+  password   String    @map("user_password")
+  salt       String    @map("user_salt")
+  isVerified Boolean   @map("is_verified")
+  userTypeID Int       @map("user_type_id")
+  token      String?
+  address    Address?
+  customer   Customer?
+  shop       Shop?
+  barber     Barber?
+
+  @@map("user")
+}
+
+model Address {
+  addressID    Int    @id @default(autoincrement()) @map("address_id")
+  userID       Int    @unique @map("user_id")
+  countryID    Int    @map("country_id")
+  stateID      Int    @map("state_id")
+  cityID       Int    @map("city_id")
+  addressLine1 String @map("address_line_1")
+  addressLine2 String @map("address_line_2")
+
+  user    User    @relation(fields: [userID], references: [userID])
+  Country Country @relation(fields: [countryID], references: [countryID])
+  State   State   @relation(fields: [stateID], references: [stateID])
+  City    City    @relation(fields: [cityID], references: [cityID])
+
+  @@map("address")
+}
+
+model Barber {
+  barberID              Int       @id @default(autoincrement()) @map("barber_id")
+  barberName            String    @map("barber_name")
+  totalExperienceInYear Int       @map("total_experience_in_years")
+  userID                Int       @unique @map("user_id")
+  imageUrl              String    @map("image_url")
+  bookings              Booking[]
+
+  user User @relation(fields: [userID], references: [userID])
+
+  @@map("barber")
+}
+
+model Customer {
+  customerID   Int       @id @default(autoincrement()) @map("customer_id")
+  customerName String    @map("customer_name")
+  userID       Int       @unique @map("user_id")
+  bookings     Booking[]
+
+  user User @relation(fields: [userID], references: [userID])
+
+  @@map("customer")
+}
+
+model Shop {
+  shopID   Int       @id @default(autoincrement()) @map("shop_id")
+  shopName String    @map("shop_name")
+  userID   Int       @unique @map("user_id")
+  services Service[]
+  bookings Booking[]
+
+  user User @relation(fields: [userID], references: [userID])
+
+  @@map("shop")
+}
+
+model Category {
+  categoryID       Int       @id @default(autoincrement()) @map("category_id")
+  categoryName     String    @map("category_name")
+  categoryImageUrl String    @map("category_image_url")
+  services         Service[]
+
+  @@map("category")
+}
+
+model Service {
+  serviceID                Int       @id @default(autoincrement()) @map("service_id")
+  serviceName              String    @map("service_name")
+  serviceImageUrl          String    @map("service_image_url")
+  servicePrice             Int       @map("service_price")
+  serviceDurationInMinutes Int       @map("service_duration_in_minutes")
+  serviceDiscountPrice     Int       @map("service_discount_price")
+  hasDiscount              Boolean   @map("has_discount")
+  shopID                   Int       @map("shop_id")
+  bookings                 Booking[]
+  categoryID               Int       @map("category_id")
+
+  shop     Shop     @relation(fields: [shopID], references: [shopID])
+  category Category @relation(fields: [categoryID], references: [categoryID])
+
+  @@map("service")
+}
+
+model Booking {
+  bookingID          Int @id @default(autoincrement()) @map("booking_id")
+  customerID         Int @map("customer_id")
+  shopID             Int @map("shop_id")
+  barberID           Int @map("barber_id")
+  serviceID          Int @map("service_id")
+  bookingTotalAmount Int @map("booking_total_amount")
+  statusID           Int @map("status_id")
+
+  customer        Customer         @relation(fields: [customerID], references: [customerID])
+  shop            Shop             @relation(fields: [shopID], references: [shopID])
+  barber          Barber           @relation(fields: [barberID], references: [barberID])
+  service         Service          @relation(fields: [serviceID], references: [serviceID])
+  bookingSchedule BookingSchedule?
+
+  @@map("booking")
+}
+
+model BookingSchedule {
+  bookingScheduleID   Int    @id @default(autoincrement()) @map("booking_schedule_id")
+  bookingDayOfTheWeek String @map("booking_day_of_the_week")
+  BookingDate         String @map("booking_date")
+  BookingStartTime    String @map("booking_start_time")
+  BookingEndTime      String @map("booking_end_time")
+  bookingID           Int    @unique @map("booking_id")
+
+  booking Booking @relation(fields: [bookingID], references: [bookingID])
+
+  @@map("booking_schedule")
+}
+
+model Country {
+  countryID   Int       @id @default(autoincrement()) @map("country_id")
+  countryName String    @map("country_name")
+  countryCode String    @map("country_code")
+  state       State[]
+  address     Address[]
+
+  @@map("country")
+}
+
+model State {
+  stateID   Int       @id @default(autoincrement()) @map("state_id")
+  stateName String    @map("state_name")
+  stateCode String    @map("state_code")
+  countryID Int       @map("country_id")
+  city      City[]
+  address   Address[]
+
+  country Country @relation(fields: [countryID], references: [countryID])
+
+  @@map("state")
+}
+
+model City {
+  cityID   Int       @id @default(autoincrement()) @map("city_id")
+  cityName String    @map("city_name")
+  cityCode String    @map("city_code")
+  stateID  Int       @map("state_id")
+  address  Address[]
+
+  state State @relation(fields: [stateID], references: [stateID])
+
+  @@map("city")
+}
+
+model Lookup {
+  lookupID       Int    @id @default(autoincrement()) @map("lookup_id")
+  lookupTypeID   Int    @map("lookup_type_id")
+  lookupType     String @map("lookup_type")
+  lookupTypeDesc String @map("lookup_type_desc")
+
+  @@map("lookup")
+}
